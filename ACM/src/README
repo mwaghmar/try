@@ -1,0 +1,40 @@
+Team Members : 1) Karthick Kumar 
+			   2) Manojkumar M. Waghmare
+
+NOTE: You should execute this on cislinux.cis.ksu.edu machine only.
+	  acs executable needs ACE library to execute which we have installed on cislinux.cis.ksu.edu only.
+
+      Server source code files are
+	  		acs_server.cpp, acs_yacc.c, acs_token_parser.c, acs.h, acs_server.h, acs_yacc.h
+
+STEPS to Execute:
+
+1) ./acs <server policy file name> <port no>  <xsb executable path>
+
+	The parameters <port no> & <xsb executable path> are optional.
+	Default port is 5420 & Default xsb executable path is /usr/bin/xsb
+
+	Example:
+		./acs server_policy1.P 
+
+	If you see execution failure because libACE.so failed to load then
+	run following command
+
+	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/grads/mwaghmar/CIS751/Assignment-IV/ace/lib
+
+	After exporting this env variable your server should run fine.
+
+2) java -jar RepositoryManagerClient.jar <ip_addr_of_server> <port_on_server> <credential_file> 
+											<private_key_file>
+
+ Example:
+  java -jar RepositoryManagerClient.jar 129.130.10.28 5420 client_credential.msg client.rsa.der 
+
+3) Server log would show client authentication status & signature verification status.
+   	
+4) On client command prompt you can put your request queries.
+   Example:
+   	Request>allow(jeremiah,write)
+
+	You should get reply from server as granted or denied.
+

@@ -1,0 +1,133 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <iterator>
+#include <string>
+#include <map>
+#include <vector>
+#include <algorithm>
+#include <streambuf>
+
+//#include <strings.h>
+
+void parseReceivedHeader(const char* headerFileName);
+void parseReceivedHeader(const std::string& headerFileName);
+
+int main()
+{
+    const char* mailHeaderFile = "sampleinput.txt";
+
+    parseReceivedHeader(mailHeaderFile);
+    return 0;
+}
+
+typedef std::map<std::string, std::string> ReceivedHeader;
+typedef std::vector<ReceivedHeader> ReceivedHeaderList;
+
+const std::string RcvdHeaderTag = "Received:";
+const std::string RcvdHeaderFromTag = "from";
+const std::string RcvdHeaderByTag = "by";
+const std::string RcvdHeaderDateTag = "date";
+
+void printReceivedHeader(const ReceivedHeader& rcvdHeader)
+{
+    std::cout << "##### Received Header #####\n" << std::endl;   
+
+    for(ReceivedHeader::const_iterator itr = rcvdHeader.begin(); itr!=rcvdHeader.end(); ++itr) {
+	std::cout << itr->first << "=" << itr->second << std::endl;
+    }
+    std::cout << std::endl;   
+}
+
+bool isDateWord(const std::string& word) 
+{
+    static const char* Mon = "Mon,";
+    static const char* Tue = "Tue,";
+    static const char* Wed = "Wed,";
+    static const char* Thu = "Thu,";
+    static const char* Fri = "Fri,";
+    static const char* Sat = "Sat,";
+    static const char* Sun = "Sun,";
+ 
+    return word == Mon || word == Tue || word == Wed || 
+	    word == Thu || word == Fri || word == Sat 
+	    || word == Sun;
+}
+
+bool isHeader(const std::string& word)
+{
+    return (word[word.length() - 1] == ':');
+}
+
+void parseReceivedHeader(const char* headerFileName)
+{
+    std::ifstream mailHeaderStream(headerFileName);
+    std::string mailHeaderString;
+
+    //reserve space for mailHeaderString before we read in the file 
+    mailHeaderStream.seekg(0, std::ios::end);
+    mailHeaderString.reserve(mailHeaderStream.tellg());
+    mailHeaderStream.seekg(0, std::ios::beg);
+
+    mailHeaderString.assign(std::istreambuf_iterator<char>(mailHeaderStream), 
+		std::istreambuf_iterator<char>());
+
+    parseReceivedHeader(mailHeaderString);    
+}
+
+void parseReceivedHeader(const std::string& headerFileString)
+{
+    ReceivedHeaderList headers;
+    ReceivedHeader rcvdHeaderMap;    
+
+    std::istringstream istr(headerFileString);
+    std::istream_iterator<std::string> itr_word(istr), itr_word_end;
+
+    for(bool headerStarted=false; itr_word != itr_word_end; ++itr_word) {
+
+	if( *itr_word == RcvdHeaderTag ) {
+	    headerStarted = true;
+	    if( !rcvdHeaderMap.empty() ) {
+		headers.push_back(rcvdHeaderMap);
+		rcvdHeaderMap.clear();
+	    }    
+	    continue;
+	}
+
+	if( headerStarted ) {
+	    if( *itr_word == RcvdHeaderFromTag ) {
+		++itr_word;
+		rcvdHeaderMap[RcvdHeaderFromTag] = *itr_word; 
+		continue;
+	    }
+
+	    if( *itr_word == RcvdHeaderByTag ) {
+		++itr_word;
+		rcvdHeaderMap[RcvdHeaderByTag] = *itr_word; 
+		continue;
+	    }
+
+	    if( isDateWord(*itr_word) ) {
+		std::string date = *itr_word;
+		for(int i = 1; i < 6; ++i) {
+		    date += " ";
+		    date += *(++itr_word);
+		}
+		rcvdHeaderMap[RcvdHeaderDateTag] = date;
+		continue;
+	    }
+
+	    if( isHeader(*itr_word) ) { //some other header starts
+		headerStarted = false;
+	    }
+	}
+	//std::cerr << *itr_word << std::endl;
+    } //for ends
+
+    if( !rcvdHeaderMap.empty() ) {
+	headers.push_back(rcvdHeaderMap);
+	rcvdHeaderMap.clear();
+    }
+
+    std::for_each(headers.begin(), headers.end(), printReceivedHeader);
+}

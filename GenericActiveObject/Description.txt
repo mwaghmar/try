@@ -1,0 +1,60 @@
+Problem Domain:
+===============
+
+Intention of this work is to make writing client server thread test cases more simple and easy.
+However pattarns defined by this bottom up DSPL can be used to simplify thread programming in C++.
+
+The main idea behind the project is to hide all thread related details required for writing such kind of
+threaded client server test cases & make it easy to write and maintain such test cases..
+
+Host Language & Framework:
+=============================
+Host language is C++.
+This DSPL is implemented using ACE Framework. ACE provides a rich set of reusable C++ wrapper facades and framework components that perform common communication software tasks across a range of OS platforms.
+More info about ACE can be found on -
+
+http://www.cs.wustl.edu/~schmidt/ACE-overview.html
+
+
+Assembly/ Control Patterns:
+===========================
+This DSPL implements a design pattern called "Active Object" in generic way using the ACE & C++ templates.
+
+The ActiveObject Pattern has been specifically designed to provide an object based solution to 
+co-operative processing between threads. An active object has a private thread of control that is used to
+execute any methods that a client invokes on the object, in short it decouples method invocation from method
+execution. 
+
+The Active Object Pattern is a combination of the Command pattern and the Proxy pattern.  
+To make ActiveObject pattern generic this DSPL implements generic Command Pattern using generic Functors 
+for class member functions.
+
+A detailed Description of Active Object Pattern can be found on Wiki Page:
+http://www.cs.wustl.edu/~schmidt/ACE-overview.html
+
+
+Following is brief description of Assembly and control patterns defined by this DSPL
+
+1) ObjProxy
+2) CommandObject
+
+ObjProxy is a facade to the ActiveObject Pattern.
+The template class ObjProxy is an assembly control pattern which can turn any class into an ActiveObject.
+ObjProxy makes ActiveObject pattern generic using C++ templates in conjunction with generic class CommandObject.
+
+3) THREAD_EXECUTE
+	This macro provides simple interface for invoking methods on active object.
+	This macro expands into invocation of operator () on ObjProxy
+
+4) THREAD_RET_EXECUTE
+	This is macro is similar to THREAD_EXECUTE but it can get you the return value of the active method 
+	invocation.
+	This macro also expands into invocation of operator () on ObjProxy but it also gives you
+	a future object that you can query later to find the return value of method execution.
+
+5) ASSERT
+	It is a macro which in case of failures gives detailed description of failed assertion.
+
+
+
+

@@ -1,0 +1,4 @@
+
+#g++ -ggdb -I. -I/home/grads/mwaghmar/CIS751/Assignment-IV/openssl32/include -I/home/grads/mwaghmar/CIS751/Assignment-IV/ace/include -L/home/grads/mwaghmar/CIS751/Assignment-IV/ace/lib -lACE  -o acs acs_server.cpp acs_yacc.c acs_token_parser.c /home/grads/mwaghmar/CIS751/Assignment-IV/openssl32/lib/libcrypto.a /home/grads/mwaghmar/CIS751/Assignment-IV/openssl32/lib/libssl.a
+
+g++ -ggdb -I. -I/home/grads/mwaghmar/CIS751/Assignment-IV/openssl32/include -I/home/grads/mwaghmar/CIS751/Assignment-IV/ace/include -L/home/grads/mwaghmar/CIS751/Assignment-IV/ace/lib -lACE  -o acs acs_server.cpp acs_yacc.c acs_token_parser.c /home/grads/mwaghmar/CIS751/Assignment-IV/openssl32/lib/libcrypto.a /home/grads/mwaghmar/CIS751/Assignment-IV/openssl32/lib/libssl.a -Wl,-rpath,/home/grads/mwaghmar/CIS751/Assignment-IV/ace/lib

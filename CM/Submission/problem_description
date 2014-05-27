@@ -1,0 +1,51 @@
+Write a library in C or C++ that takes a set of email headers as input
+and returns a data structure that represents parsed components of any
+Received: headers in the set of headers. There can be multiple
+Received: headers present, and they may not necessarily be consecutive
+in the set of headers.
+
+An example prototype for the function would be:
+
+parsed_rcvd_headers_t *ParseEmailHeaders(const char *emailhdrs);
+
+You get to define the data structure parsed_rcvd_headers_t (struct
+for C, class for C++) and any supporting data types that you would
+like.
+
+You should also implement a cleanup function:
+
+void FreeRcvdHeaders(parsed_rcvd_headers_t *);
+
+that cleans up any data structure returned by ParseEmailHeaders.
+You should parse out the following components out of each Received:
+header. All of these can be expressed as strings:
+ - The from entity for that hop (i.e. the single token immediately following the "from" in the header)
+ - The by entity for that hop (i.e. the single token immediately following the "by" in the header)
+ - The date
+
+For example, given the following Received: header:
+
+Received: from [68.230.240.27] ([68.230.240.27:59584] helo=eastrmmtai108.cox.net)
+        by zest.cage.cloudmark.com (envelope-from <m4253525@spamnet.com>)
+        (ecelerity 2.2.2.34 r(26258)) with ESMTP
+        id 67/95-03818-2A6E64B4; Fri, 08 Jan 2010 00:02:42 -0800
+
+You would parse the following:  
+        
+from="[68.230.240.27]"
+by="zest.cage.cloudmark.com"
+date="Fri, 08 Jan 2010 00:02:42 -0800"
+
+Your implementation should handle a case where a Received: header does
+not contain one or more of these components. Simply define a
+reasonable convention and document it.
+
+Please provide a .h/.hh file with the specification of the
+parsed_rcvd_headers_t struct and any other public datatypes you would
+like to expose, and a .c/.cc file with the implementation of
+ParseEmailHeaders and any private data types/supporting functions.
+
+The file sample_email_headers.txt contains a set of sample email
+headers that should be able to be parsed by the function.
+You can use any standard library functions that conform to the POSIX
+or C99 standards, or the standard template library when using C++.
